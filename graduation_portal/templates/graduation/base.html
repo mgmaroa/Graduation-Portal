@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>{% block title %}Confirm graduation status{% endblock %} | {{ INSTITUTION_NAME }}</title>
+  <style>
+    :root {
+      --gown: #1b2a49;
+      --gown-light: #2c4170;
+      --gold: #b8892b;
+      --paper: #f2f4f8;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #566178;
+      --line: #d9dee8;
+      --error: #b42318;
+      --error-bg: #fdf0ee;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      background: var(--paper); color: var(--ink);
+      font: 1rem/1.55 var(--sans);
+    }
+    .masthead { background: var(--gown); color: #fff; padding: 1.25rem 1.25rem 1.5rem; border-bottom: 4px solid var(--gold); }
+    .masthead .inner, main, footer { width: 100%; max-width: 32rem; margin: 0 auto; }
+    .masthead p { margin: 0; font-family: var(--serif); font-size: 1.05rem; letter-spacing: .01em; }
+    .masthead span { display: block; margin-top: .15rem; font-size: .9rem; color: #c9d2e6; }
+    main { flex: 1; padding: 1.5rem 1.25rem 2rem; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.5rem 1.35rem 1.6rem; }
+    h1 { font-family: var(--serif); font-weight: 700; font-size: 1.6rem; line-height: 1.25; margin: 0 0 .5rem; color: var(--gown); }
+    .lead { margin: 0 0 1.4rem; color: var(--muted); }
+    .field { margin-bottom: 1.15rem; }
+    label { display: block; font-weight: 600; margin-bottom: .35rem; }
+    input[type=text] {
+      width: 100%; font: inherit; font-size: 1.25rem; padding: .7rem .8rem;
+      border: 1.5px solid #9aa4b8; border-radius: 8px; background: #fff; color: var(--ink);
+    }
+    .field img { display: block; margin-bottom: .5rem; border-radius: 6px; border: 1px solid var(--line); }
+    .field .help { margin: .35rem 0 0; font-size: .9rem; color: var(--muted); }
+    .field.has-error input[type=text] { border-color: var(--error); }
+    .errors { margin: .4rem 0 0; padding: 0; list-style: none; color: var(--error); font-size: .95rem; }
+    .btn {
+      display: inline-block; width: 100%; text-align: center; font: inherit; font-weight: 600;
+      padding: .85rem 1rem; border-radius: 8px; border: 0; cursor: pointer; text-decoration: none;
+      background: var(--gown); color: #fff;
+    }
+    .btn:hover { background: var(--gown-light); }
+    .btn.secondary { background: transparent; color: var(--gown); border: 1.5px solid var(--gown); }
+    .btn.secondary:hover { background: #eef1f7; }
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--gold); outline-offset: 2px;
+    }
+    footer { padding: 0 1.25rem 1.5rem; font-size: .85rem; color: var(--muted); }
+
+    /* Eligible: the one memorable element */
+    .result { border-top: 6px solid var(--gold); }
+    .result .mark { width: 3rem; height: 3rem; margin-bottom: .9rem; }
+    .result .name { font-family: var(--serif); font-size: 1.9rem; line-height: 1.2; margin: 0 0 1.25rem; color: var(--ink); }
+    dl { margin: 0 0 1.4rem; border-top: 1px solid var(--line); }
+    dl div { padding: .75rem 0; border-bottom: 1px solid var(--line); }
+    dt { font-size: .9rem; color: var(--muted); }
+    dd { margin: .1rem 0 0; font-weight: 600; }
+    .note { margin: 0 0 1.4rem; font-size: .92rem; color: var(--muted); }
+
+    /* Not found / blocked: calm, neutral */
+    .quiet { border-top: 6px solid #8b95a9; }
+    .quiet h1 { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="inner">
+      <p>{{ INSTITUTION_NAME }}</p>
+      <span>Graduation status</span>
+    </div>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer>Results are shown only for the admission number you enter.</footer>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "graduation/base.html" %}
+{% block content %}
+<section class="card">
+  <h1>Confirm your graduation status</h1>
+  <p class="lead">Enter your admission number to confirm your graduation status.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="field{% if form.admission_no.errors %} has-error{% endif %}">
+      <label for="{{ form.admission_no.id_for_label }}">{{ form.admission_no.label }}</label>
+      {{ form.admission_no }}
+      {% if form.admission_no.errors %}
+        <ul class="errors">{% for e in form.admission_no.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+
+    <div class="field{% if form.captcha.errors %} has-error{% endif %}">
+      <label for="{{ form.captcha.id_for_label }}">{{ form.captcha.label }}</label>
+      {{ form.captcha }}
+      <p class="help">Solve the sum in the picture and type the answer.</p>
+      {% if form.captcha.errors %}
+        <ul class="errors">{% for e in form.captcha.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn">Confirm graduation status</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "graduation/base.html" %}
+{% block title %}Too many attempts{% endblock %}
+{% block content %}
+<section class="card quiet">
+  <h1>Too many attempts</h1>
+  <p class="lead">Lookups from your connection have been paused for a few minutes.</p>
+  <p class="note">Wait about {{ minutes }} minutes, then try again. If you are on a shared network and need your status urgently, contact the registrar's office.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "graduation/base.html" %}
+{% block title %}You are on the graduation list{% endblock %}
+{% block content %}
+<section class="card result">
+  <svg class="mark" viewBox="0 0 48 48" role="img" aria-label="Confirmed">
+    <circle cx="24" cy="24" r="23" fill="#1b2a49"/>
+    <path d="M14 25l7 7 13-15" fill="none" stroke="#e3c06f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <h1>Cleared for graduation</h1>
+  <p class="name">{{ graduand.student_name }}</p>
+
+  <dl>
+    <div><dt>Student ID</dt><dd>{{ graduand.admission_no }}</dd></div>
+    <div><dt>Course</dt><dd>{{ graduand.course }}</dd></div>
+    <div><dt>School or department</dt><dd>{{ graduand.school }}</dd></div>
+    <div><dt>Graduation date</dt><dd>{{ graduand.graduation_date|date:"l, j F Y" }}</dd></div>
+  </dl>
+
+  <p class="note">Contact the registrar if any detail above is wrong.</p>
+  <!-- <a class="btn secondary" href="{% url 'lookup' %}">Check another number</a> -->
+</section>
+{% endblock %}

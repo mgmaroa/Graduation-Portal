@@ -16,14 +16,17 @@ LAST_NAMES = [
     "Githinji", "Rotich", "Mbugua", "Wafula", "Kilonzo", "Nduta", "Langat", "Owino",
 ]
 
-# (code, course, school)
+# (course, school)
 COURSES = [
-    ("DICT", "Diploma in Information Communication Technology", "School of Computing and Informatics"),
-    ("DBM", "Diploma in Business Management", "School of Business"),
-    ("DEE", "Diploma in Electrical and Electronic Engineering", "School of Engineering"),
-    ("DCE", "Diploma in Civil Engineering", "School of Engineering"),
-    ("CHM", "Certificate in Hospitality Management", "School of Hospitality and Tourism"),
+    ("Diploma in Information Communication Technology", "School of Computing and Informatics"),
+    ("Diploma in Business Management", "School of Business"),
+    ("Diploma in Electrical and Electronic Engineering", "School of Engineering"),
+    ("Diploma in Civil Engineering", "School of Engineering"),
+    ("Certificate in Hospitality Management", "School of Hospitality and Tourism"),
 ]
+
+# Easy numbers to remember when demoing the lookup
+DEMO_NUMBERS = [11300, 9876, 11256]
 
 
 class Command(BaseCommand):
@@ -45,18 +48,20 @@ class Command(BaseCommand):
 
         rng = random.Random(42)  # fixed seed: same demo list every time
         grad_date = date.fromisoformat(settings.GRADUATION_DATE)
-        counters = {code: 0 for code, _, _ in COURSES}
+
+        # Start with memorable numbers for demos, then fill with random 4-5 digit ones
+        numbers = DEMO_NUMBERS[: opts["count"]]
+        pool = [n for n in range(9000, 12000) if n not in numbers]
+        numbers += rng.sample(pool, max(0, opts["count"] - len(numbers)))
+
         created = 0
         rows = []
-
-        for i in range(opts["count"]):
-            code, course, school = COURSES[i % len(COURSES)]
-            counters[code] += 1
-            admission_no = f"{code}/{counters[code]:03d}/{rng.choice([2023, 2024])}"
+        for i, number in enumerate(numbers):
+            course, school = COURSES[i % len(COURSES)]
             name = f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}"
 
             obj, was_created = Graduand.objects.update_or_create(
-                admission_no=admission_no,
+                admission_no=str(number),
                 defaults={
                     "student_name": name,
                     "course": course,
@@ -66,12 +71,12 @@ class Command(BaseCommand):
                 },
             )
             created += was_created
-            rows.append((obj.admission_no, name, code))
+            rows.append((obj.admission_no, name))
 
         self.stdout.write(self.style.SUCCESS(
             f"Dummy data ready: {created} created, {opts['count'] - created} already existed."
         ))
         self.stdout.write("\nTry these admission numbers in the lookup:")
-        for adm, name, _ in rows[:5]:
-            self.stdout.write(f"  {adm:<16} {name}")
-        self.stdout.write("  ...and anything NOT in the list (e.g. XYZ/999/2020) to test the regret page.")
+        for adm, name in rows[:5]:
+            self.stdout.write(f"  {adm:<8} {name}")
+        self.stdout.write("  ...and anything NOT in the list (e.g. 10000) to test the regret page.")

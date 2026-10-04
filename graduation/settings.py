@@ -37,6 +37,8 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 # Admin URL is configurable so it is not at the guessable /admin/
 ADMIN_URL = env("ADMIN_URL", default="admin/")
 
+INSTITUTION_NAME = env("INSTITUTION_NAME", default="Your Institution Name")
+
 # Default graduation date shown on the eligibility page / used for dummy data
 GRADUATION_DATE = env("GRADUATION_DATE", default="2026-11-11")
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'graduation_portal',
 ]
 
@@ -74,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'graduation_portal.context_processors.portal',
             ],
         },
     },
@@ -186,3 +190,27 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# ---------------------------------------------------------------------------
+# Student lookup
+# ---------------------------------------------------------------------------
+# Admission numbers are 4-6 digits, e.g. 9876, 11300
+ADMISSION_NO_PATTERN = r"\d{4,6}"
+
+# Rate limiting per IP address. Generous on purpose: students share campus Wi-Fi.
+LOOKUP_WINDOW_MINUTES = env.int("LOOKUP_WINDOW_MINUTES", default=10)
+LOOKUP_MAX_NOT_FOUND = env.int("LOOKUP_MAX_NOT_FOUND", default=15)
+LOOKUP_MAX_TOTAL = env.int("LOOKUP_MAX_TOTAL", default=60)
+
+# Only True when running behind a reverse proxy you control (nginx, etc.)
+TRUST_PROXY_HEADERS = env.bool("TRUST_PROXY_HEADERS", default=False)
+
+# CAPTCHA: simple maths question, easier on phones than distorted letters
+CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"
+CAPTCHA_TIMEOUT = 10  # minutes
+CAPTCHA_IMAGE_SIZE = (180, 64)
+CAPTCHA_FONT_SIZE = 38
+CAPTCHA_NOISE_FUNCTIONS = ("captcha.helpers.noise_dots",)  # no lines through the digits
+CAPTCHA_BACKGROUND_COLOR = "#f2f4f8"
+CAPTCHA_FOREGROUND_COLOR = "#1b2a49"
+CAPTCHA_TEST_MODE = False  # tests switch this on
