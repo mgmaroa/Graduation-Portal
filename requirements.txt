@@ -1,0 +1,16 @@
+Django>=5.2,<5.3
+django-environ>=0.11
+
+# MySQL (development). PyMySQL is pure Python, so it installs easily on Windows/Linux.
+PyMySQL>=1.1
+cryptography>=42
+
+# PostgreSQL (deployment) - uncomment when you move over
+# psycopg[binary]>=3.2
+
+# Added in later steps
+# django-simple-captcha
+# django-axes
+# django-ratelimit
+# openpyxl
+# django-two-factor-auth
