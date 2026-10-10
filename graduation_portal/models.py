@@ -17,7 +17,12 @@ class Graduand(models.Model):
     graduation_date = models.DateField()
     is_dummy = models.BooleanField(
         default=False,
-        help_text="True for demo records. They can be cleared before the real list is loaded.",
+        help_text="True for demo records. They are removed automatically when the real list is uploaded.",
+    )
+    manually_edited = models.BooleanField(
+        default=False,
+        help_text="Entered or changed by hand. Later list uploads will not overwrite these records "
+                  "unless the ICT chief chooses to.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -46,7 +51,10 @@ class UploadLog(models.Model):
     records_total = models.PositiveIntegerField(default=0)
     records_added = models.PositiveIntegerField(default=0)
     records_updated = models.PositiveIntegerField(default=0)
+    records_skipped = models.PositiveIntegerField(
+        default=0, help_text="Left alone because they were edited by hand.")
     records_rejected = models.PositiveIntegerField(default=0)
+    dummy_removed = models.PositiveIntegerField(default=0)
     notes = models.TextField(blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,0 +1,81 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:graduation_portal_graduand_changelist' %}">Graduands</a> &rsaquo;
+  <a href="{% url 'admin:graduation_portal_graduand_upload' %}">Upload list</a> &rsaquo; Check
+</div>
+{% endblock %}
+{% block content %}
+<div id="content-main">
+  <p>File: <strong>{{ filename }}</strong> &mdash; nothing has been saved yet.</p>
+
+  <div class="module" style="padding:12px 16px;margin-bottom:16px">
+    <table style="width:auto">
+      <tr><td style="padding-right:24px">New students</td><td><strong>{{ plan.new|length }}</strong></td></tr>
+      <tr><td>Existing, details will change</td><td><strong>{{ plan.update|length }}</strong></td></tr>
+      <tr><td>Existing, already match</td><td><strong>{{ plan.unchanged }}</strong></td></tr>
+      <tr><td>Left alone (edited by hand)</td><td><strong>{{ plan.skipped_manual|length }}</strong></td></tr>
+      <tr><td>Rejected rows</td><td><strong>{{ parsed.rejected|length }}</strong></td></tr>
+      {% if remove_dummy and plan.dummy_total %}
+      <tr><td>Demo records to remove</td><td><strong>{{ plan.dummy_total }}</strong>{% if plan.dummy_clashes %} ({{ plan.dummy_clashes }} share a number with a real student){% endif %}</td></tr>
+      {% endif %}
+    </table>
+  </div>
+
+  {% if plan.update %}
+  <div class="module">
+    <h2>Details that will change{% if extra_updates %} (first {{ updates|length }} of {{ plan.update|length }}){% endif %}</h2>
+    <table>
+      <thead><tr><th>Admission no</th><th>Field</th><th>Now</th><th>After upload</th></tr></thead>
+      <tbody>
+      {% for item in updates %}{% for label, old, new in item.changes %}
+        <tr><td>{{ item.row.admission_no }}</td><td>{{ label }}</td><td>{{ old }}</td><td>{{ new }}</td></tr>
+      {% empty %}
+        <tr><td>{{ item.row.admission_no }}</td><td colspan="3">Demo record replaced by real data</td></tr>
+      {% endfor %}{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if plan.skipped_manual %}
+  <div class="module">
+    <h2>Left alone because you edited them by hand{% if extra_skipped %} (first {{ skipped|length }} of {{ plan.skipped_manual|length }}){% endif %}</h2>
+    <table>
+      <thead><tr><th>Admission no</th><th>Field</th><th>Kept</th><th>List says</th></tr></thead>
+      <tbody>
+      {% for item in skipped %}{% for label, old, new in item.changes %}
+        <tr><td>{{ item.row.admission_no }}</td><td>{{ label }}</td><td>{{ old }}</td><td>{{ new }}</td></tr>
+      {% endfor %}{% endfor %}
+      </tbody>
+    </table>
+    <p class="help" style="padding:8px 10px">To use the list's version instead, go back and tick "Overwrite records that were edited by hand".</p>
+  </div>
+  {% endif %}
+
+  {% if parsed.rejected %}
+  <div class="module">
+    <h2>Rejected rows{% if extra_rejected %} (first {{ rejected|length }} of {{ parsed.rejected|length }}){% endif %}</h2>
+    <table>
+      <thead><tr><th>Row in file</th><th>Problem</th></tr></thead>
+      <tbody>{% for number, reason in rejected %}<tr><td>{{ number }}</td><td>{{ reason }}</td></tr>{% endfor %}</tbody>
+    </table>
+    <p class="help" style="padding:8px 10px">Rejected rows are skipped. Fix them in the file and upload again, or add those students by hand.</p>
+  </div>
+  {% endif %}
+
+  {% if parsed.rows %}
+  <form method="post" action="{% url 'admin:graduation_portal_graduand_upload_confirm' %}">
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" value="Apply upload" class="default">
+      <a href="{% url 'admin:graduation_portal_graduand_upload' %}" class="closelink">Cancel</a>
+    </div>
+  </form>
+  {% else %}
+  <p class="errornote">No valid rows were found, so there is nothing to apply.</p>
+  <p><a href="{% url 'admin:graduation_portal_graduand_upload' %}">Back to upload</a></p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
+
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'captcha',
+    'axes',
     'graduation_portal',
 ]
 
@@ -63,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',  # must be last
 ]
 
 ROOT_URLCONF = 'graduation.urls'
@@ -214,3 +218,22 @@ CAPTCHA_NOISE_FUNCTIONS = ("captcha.helpers.noise_dots",)  # no lines through th
 CAPTCHA_BACKGROUND_COLOR = "#f2f4f8"
 CAPTCHA_FOREGROUND_COLOR = "#1b2a49"
 CAPTCHA_TEST_MODE = False  # tests switch this on
+
+# ---------------------------------------------------------------------------
+# Admin login protection (django-axes)
+# ---------------------------------------------------------------------------
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = env.int("LOGIN_MAX_FAILURES", default=5)
+AXES_COOLOFF_TIME = timedelta(minutes=env.int("LOGIN_LOCKOUT_MINUTES", default=60))
+# Lock the IP + username pair, so a stranger cannot lock the real ICT chief out
+# from the ICT chief's own connection.
+AXES_LOCKOUT_PARAMETERS = [["ip_address", "username"]]
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_TEMPLATE = "graduation/locked_out.html"
+if TRUST_PROXY_HEADERS:
+    AXES_IPWARE_PROXY_COUNT = 1
+    AXES_IPWARE_META_PRECEDENCE_ORDER = ("HTTP_X_FORWARDED_FOR", "REMOTE_ADDR")
+
